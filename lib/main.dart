@@ -11,7 +11,7 @@ final Map<String, WidgetBuilder> map = {
 String? initailRout;
 
 void main() {
-  initailRout = MyConstant.appName;
+  initailRout = MyConstant.routeAuthen;
   runApp(MyApp());
 }
 
