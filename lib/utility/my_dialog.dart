@@ -6,7 +6,7 @@ import 'package:pupeashopping/witgets/show_image.dart';
 import 'package:pupeashopping/witgets/show_title.dart';
 
 class MyDialog {
-  Future<Null> alertLocationService(BuildContext context) async {
+  Future<Null> alertLocationService(BuildContext context, String title, String message) async {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -15,11 +15,11 @@ class MyDialog {
                   path: MyConstant.image1,
                 ),
                 title: ShowTitle(
-                  title: 'Location ของคุณปิดอยู่',
+                  title: title,
                   textStyle: MyConstant().h2_Style(),
                 ),
                 subtitle: ShowTitle(
-                  title: 'กรูณาเปิด Location Service',
+                  title: message,
                   textStyle: MyConstant().h3_Style(),
                 ),
               ),

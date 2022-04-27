@@ -1,10 +1,11 @@
-import 'dart:ffi';
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pupeashopping/utility/my_constant.dart';
+import 'package:pupeashopping/utility/my_dialog.dart';
 import 'package:pupeashopping/witgets/show_image.dart';
 import 'package:pupeashopping/witgets/show_title.dart';
 
@@ -18,24 +19,64 @@ class CreateAccount extends StatefulWidget {
 class _CreateAccountState extends State<CreateAccount> {
   String? typeUser;
   File? file;
+  double? lat, lng;
 
   @override
   void initState() {
     super.initState();
-    findLatLng();
+    checkPermission();
   }
 
-  Future<Null> findLatLng()async{
+  Future<Null> checkPermission() async {
     bool locationService;
     LocationPermission locationPermission;
 
     locationService = await Geolocator.isLocationServiceEnabled();
     if (locationService) {
       print('Service Location Open');
+
+      locationPermission = await Geolocator.checkPermission();
+      if (locationPermission == LocationPermission.denied) {
+        locationPermission = await Geolocator.requestPermission();
+        if (locationPermission == LocationPermission.deniedForever) {
+          MyDialog().alertLocationService(
+              context, 'ไม่อนุญาตแชร์ Location', 'โปรดแชร์ Location');
+        } else {
+          findLatLng();
+        }
+      } else {
+        if (locationPermission == LocationPermission.deniedForever) {
+          MyDialog().alertLocationService(
+              context, 'ไม่อนุญาตแชร์ Location', 'โปรดแชร์ Location');
+        } else {
+          findLatLng();
+        }
+      }
     } else {
       print('Service Location Close');
+      MyDialog().alertLocationService(
+          context, 'Location ของคุณปิดอยู่', 'กรุณาเปิด Location Service');
     }
   }
+
+  Future<Null> findLatLng()async{
+    Position? position = await findPosittion();
+    setState(() {
+      lat = position!.latitude;
+      lng = position.longitude;
+      print('### lat = $lat, lng = $lng');
+    });
+  }
+
+  Future<Position?> findPosittion()async{
+    Position position;
+    try {
+      position = await Geolocator.getCurrentPosition();
+      return position;
+    } catch (e) {
+      return null;
+    }
+  } 
 
   @override
   Widget build(BuildContext context) {
