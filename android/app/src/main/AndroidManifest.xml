@@ -6,6 +6,8 @@
         android:label="pupeashopping"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBy0RNj1A1TM08ylZv_4pHZl8pZ8Tvtb_g"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -1,12 +1,15 @@
-
 import 'dart:io';
+import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pupeashopping/utility/my_constant.dart';
 import 'package:pupeashopping/utility/my_dialog.dart';
 import 'package:pupeashopping/witgets/show_image.dart';
+import 'package:pupeashopping/witgets/show_porgress.dart';
 import 'package:pupeashopping/witgets/show_title.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -17,9 +20,16 @@ class CreateAccount extends StatefulWidget {
 }
 
 class _CreateAccountState extends State<CreateAccount> {
+  String? avatar;
   String? typeUser;
   File? file;
   double? lat, lng;
+  final formKey = GlobalKey<FormState>();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController userController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
 
   @override
   void initState() {
@@ -59,7 +69,7 @@ class _CreateAccountState extends State<CreateAccount> {
     }
   }
 
-  Future<Null> findLatLng()async{
+  Future<Null> findLatLng() async {
     Position? position = await findPosittion();
     setState(() {
       lat = position!.latitude;
@@ -68,7 +78,7 @@ class _CreateAccountState extends State<CreateAccount> {
     });
   }
 
-  Future<Position?> findPosittion()async{
+  Future<Position?> findPosittion() async {
     Position position;
     try {
       position = await Geolocator.getCurrentPosition();
@@ -76,7 +86,7 @@ class _CreateAccountState extends State<CreateAccount> {
     } catch (e) {
       return null;
     }
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,29 +94,206 @@ class _CreateAccountState extends State<CreateAccount> {
 
     return Scaffold(
       appBar: AppBar(
+        actions: [buildCreatNewAccount()],
         title: Text('Create New Account'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: [
-            buildTitle('สมัครสมาชิก'),
-            buildName(size),
-            buildTitle('ชนิดของ User'),
-            buildRadiobuyer(size),
-            buildRadioSeller(size),
-            buildRadioRider(size),
-            buildUser(size),
-            buildPhone(size),
-            buildPassword(size),
-            buildAddress(size),
-            buildTitle('รูปภาพ'),
-            buildAvatar(size),
-          ],
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+          behavior: HitTestBehavior.opaque,
+          child: Form(
+            key: formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  buildTitle('สมัครสมาชิก'),
+                  buildName(size),
+                  buildTitle('ชนิดของ User'),
+                  buildRadiobuyer(size),
+                  buildRadioSeller(size),
+                  buildRadioRider(size),
+                  buildUser(size),
+                  buildPhone(size),
+                  buildPassword(size),
+                  buildAddress(size),
+                  buildTitle('รูปภาพ'),
+                  buildAvatar(size),
+                  buildTitle('แสดงที่อยู่ของคุณ'),
+                  buildMap(),
+                  buildCreateButtontest(size, context),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
+
+  Container buildCreateButtontest(double size, BuildContext context) {
+    return Container(
+      height: 50,
+      margin: EdgeInsets.symmetric(vertical: 16),
+      width: size * 0.8,
+      child: ElevatedButton(
+        style: MyConstant().myButtonStyle(),
+        onPressed: () {
+          if (formKey.currentState!.validate()) {
+          if (typeUser == null) {
+            print('Non Choose Type User');
+            MyDialog().normalDialog(
+              context,
+              'ยังไม่ได้เลือกชนิดของ User',
+              'กรุณาเลือกชนิดของ User',
+            );
+          } else {
+            print('Process Insert to Database');
+            uploadPictureAndInsertData();
+          }
+        }
+        },
+        child: Text('Create New Account'),
+      ),
+    );
+  }
+
+  IconButton buildCreatNewAccount() {
+    return IconButton(
+      onPressed: () {
+        if (formKey.currentState!.validate()) {
+          if (typeUser == null) {
+            print('Non Choose Type User');
+            MyDialog().normalDialog(
+              context,
+              'ยังไม่ได้เลือกชนิดของ User',
+              'กรุณาเลือกชนิดของ User',
+            );
+          } else {
+            print('Process Insert to Database');
+            uploadPictureAndInsertData();
+          }
+        }
+      },
+      icon: Icon(Icons.cloud_upload),
+    );
+  }
+
+  IconButton buildCreatNewAccountButton() {
+    return IconButton(
+      onPressed: () {
+        if (formKey.currentState!.validate()) {
+          if (typeUser == null) {
+            print('Non Choose Type User');
+            MyDialog().normalDialog(
+              context,
+              'ยังไม่ได้เลือกชนิดของ User',
+              'กรุณาเลือกชนิดของ User',
+            );
+          } else {
+            print('Process Insert to Database');
+            uploadPictureAndInsertData();
+          }
+        }
+      },
+      icon: Icon(Icons.cloud_upload),
+    );
+  }
+
+  Future<Null> uploadPictureAndInsertData() async {
+    String name = nameController.text;
+    String user = userController.text;
+    String phone = phoneController.text;
+    String password = passwordController.text;
+    String address = addressController.text;
+    print(
+        '### name = $name, user = $user, phone = $phone, password = $password, address = $address');
+    String path =
+        '${MyConstant.domain}/pupeashopping/getUserWhereUser.php?isAdd=true&user=$user';
+    await Dio().get(path).then((value) async {
+      print('### value ===> $value');
+      if (value.toString() == 'null') {
+        print('### User OK');
+
+        if (file == null) {
+          processInsertMySQL(
+              name: name,
+              user: user,
+              phone: phone,
+              password: password,
+              address: address);
+          //No Avatar
+        } else {
+          // Have avatar
+          print('### process Upload Avatar');
+
+          String apiSaveAvatar =
+              '${MyConstant.domain}/pupeashopping/saveAvatar.php';
+          int i = Random().nextInt(100000);
+          String nameAvatar = 'avatar$i.jpg';
+          Map<String, dynamic> map = Map();
+          map['file'] =
+              await MultipartFile.fromFile(file!.path, filename: nameAvatar);
+          FormData data = FormData.fromMap(map);
+          await Dio().post(apiSaveAvatar, data: data).then((value) {
+            avatar = '/pupeashopping/avatar/$nameAvatar';
+            processInsertMySQL(
+                name: name,
+                user: user,
+                phone: phone,
+                password: password,
+                address: address);
+          });
+        }
+      } else {
+        MyDialog().normalDialog(context, 'User Fasle', 'Please Change User');
+      }
+    });
+  }
+
+  Future<Null> processInsertMySQL(
+      {String? name,
+      String? user,
+      String? phone,
+      String? password,
+      String? address}) async {
+    print('### ProcessInsertMySQL Work and avatar ===>> $avatar');
+    String apiInserUser =
+        '${MyConstant.domain}/pupeashopping/insertUser.php?isAdd=true&name=$name&typeUser=$typeUser&address=$address&phone=$phone&user=$user&password=$password&avatar=$avatar&lat=$lat&lng=$lng';
+    await Dio().get(apiInserUser).then((value) {
+      if (value.toString() == 'true') {
+        Navigator.pop(context);
+      } else {
+        MyDialog().normalDialog(
+            context, 'Create New User False !!!', 'Please Try Again');
+      }
+      ;
+    });
+  }
+
+  Set<Marker> setMarker() => <Marker>[
+        Marker(
+          markerId: MarkerId('id'),
+          position: LatLng(lat!, lng!),
+          infoWindow: InfoWindow(
+              title: 'คุณอยู่ที่นี่', snippet: 'Lat = $lat, Lng = $lng'),
+        ),
+      ].toSet();
+
+  Widget buildMap() => Container(
+        width: double.infinity,
+        height: 300,
+        child: lat == null
+            ? ShowProgress()
+            : GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(lat!, lng!),
+                  zoom: 16,
+                ),
+                onMapCreated: (controller) {},
+                markers: setMarker(),
+              ),
+      );
 
   Future<Null> chooseImage(ImageSource source) async {
     try {
@@ -158,6 +345,12 @@ class _CreateAccountState extends State<CreateAccount> {
           width: size * 0.6,
           margin: EdgeInsets.only(bottom: 10),
           child: TextFormField(
+            controller: userController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'กรุณากรอก User ด้วย';
+              } else {}
+            },
             decoration: InputDecoration(
               labelStyle: MyConstant().h3_Style(),
               labelText: 'User :',
@@ -185,6 +378,12 @@ class _CreateAccountState extends State<CreateAccount> {
           width: size * 0.6,
           // margin: EdgeInsets.only(top: 10),
           child: TextFormField(
+            controller: phoneController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'กรุณากรอก Phone ด้วย';
+              } else {}
+            },
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelStyle: MyConstant().h3_Style(),
@@ -213,6 +412,12 @@ class _CreateAccountState extends State<CreateAccount> {
           width: size * 0.6,
           margin: EdgeInsets.only(top: 10),
           child: TextFormField(
+            controller: passwordController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'กรุณากรอก Password ด้วย';
+              } else {}
+            },
             obscureText: true,
             decoration: InputDecoration(
               labelStyle: MyConstant().h3_Style(),
@@ -241,6 +446,12 @@ class _CreateAccountState extends State<CreateAccount> {
           width: size * 0.6,
           margin: EdgeInsets.only(top: 10),
           child: TextFormField(
+            controller: addressController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'กรุณากรอก Address ด้วย';
+              } else {}
+            },
             maxLines: 4,
             decoration: InputDecoration(
               hintStyle: MyConstant().h3_Style(),
@@ -344,6 +555,12 @@ class _CreateAccountState extends State<CreateAccount> {
           width: size * 0.6,
           // margin: EdgeInsets.only(top: 10),
           child: TextFormField(
+            controller: nameController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'กรุณากรอก Name ด้วย';
+              } else {}
+            },
             decoration: InputDecoration(
               labelStyle: MyConstant().h3_Style(),
               labelText: 'Name :',
