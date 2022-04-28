@@ -1,7 +1,13 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:pupeashopping/models/user_model.dart';
 import 'package:pupeashopping/utility/my_constant.dart';
+import 'package:pupeashopping/utility/my_dialog.dart';
 import 'package:pupeashopping/witgets/show_image.dart';
 import 'package:pupeashopping/witgets/show_title.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Authen extends StatefulWidget {
   const Authen({Key? key}) : super(key: key);
@@ -74,7 +80,7 @@ class _AuthenState extends State<Authen> {
                 String user = userController.text;
                 String password = passwordController.text;
                 print('### user = $user, password = $password');
-                
+                checkAuthen(user: user, password: password);
               }
             },
             child: Text('Login'),
@@ -82,6 +88,52 @@ class _AuthenState extends State<Authen> {
         ),
       ],
     );
+  }
+
+  Future<Null> checkAuthen({String? user, String? password}) async {
+    String apiCheckAuthen =
+        '${MyConstant.domain}/pupeashopping/getUserWhereUser.php?isAdd=true&user=$user';
+    await Dio().get(apiCheckAuthen).then((value) async {
+      print('### value for api ==> $value');
+      if (value.toString() == 'null') {
+        MyDialog()
+            .normalDialog(context, 'User False!!!', 'No $user in my Database');
+      } else {
+        for (var item in json.decode(value.data)) {
+          UserModel model = UserModel.fromMap(item);
+          if (password == model.password) {
+            //Success authen
+            String type_user = model.typeUser;
+            print('### Authen Success in typeUser ===> $type_user');
+
+            SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+            preferences.setString('type_user', type_user);
+            preferences.setString('user', model.user);
+            
+            switch (type_user) {
+              case 'buyer':
+                Navigator.pushNamedAndRemoveUntil(
+                    context, MyConstant.routeBuyerService, (route) => false);
+                break;
+              case 'seller':
+                Navigator.pushNamedAndRemoveUntil(
+                    context, MyConstant.routeSellerService, (route) => false);
+                break;
+              case 'rider':
+                Navigator.pushNamedAndRemoveUntil(
+                    context, MyConstant.routeRiderService, (route) => false);
+                break;
+              default:
+            }
+          } else {
+            //Authen False
+            MyDialog().normalDialog(context, 'Password False!!!',
+                'Password False Please Try Again');
+          }
+        }
+      }
+    });
   }
 
   Row buildPassword(double size) {
