@@ -23,12 +23,31 @@ class MyConstant {
   static Color dark = Color(0xffc5899f);
   static Color light = Color(0xffffecff);
   // TextStyle
-  TextStyle h1_Style() =>
-      TextStyle(fontSize: 24, color: dark, fontWeight: FontWeight.bold);
-  TextStyle h2_Style() =>
-      TextStyle(fontSize: 18, color: dark, fontWeight: FontWeight.w700);
-  TextStyle h3_Style() =>
-      TextStyle(fontSize: 14, color: dark, fontWeight: FontWeight.normal);
+  TextStyle h1_Style() => TextStyle(
+        fontSize: 24,
+        color: dark,
+        fontWeight: FontWeight.bold,
+      );
+  TextStyle h2_Style() => TextStyle(
+        fontSize: 18,
+        color: dark,
+        fontWeight: FontWeight.w700,
+      );
+      TextStyle h2_WhiteStyle() => TextStyle(
+        fontSize: 18,
+        color: Colors.white,
+        fontWeight: FontWeight.w700,
+      );
+  TextStyle h3_Style() => TextStyle(
+        fontSize: 14,
+        color: dark,
+        fontWeight: FontWeight.normal,
+      );
+      TextStyle h3_whiteStyle() => TextStyle(
+        fontSize: 14,
+        color: Colors.white,
+        fontWeight: FontWeight.normal,
+      );
   // Button Style
   ButtonStyle myButtonStyle() => ElevatedButton.styleFrom(
         primary: MyConstant.primary,
