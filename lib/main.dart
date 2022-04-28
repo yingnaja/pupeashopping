@@ -1,4 +1,7 @@
+
+
 import 'package:flutter/material.dart';
+import 'package:pupeashopping/states/add_product.dart';
 import 'package:pupeashopping/states/authen.dart';
 import 'package:pupeashopping/states/buyer_service.dart';
 import 'package:pupeashopping/states/create_account.dart';
@@ -13,6 +16,7 @@ final Map<String, WidgetBuilder> map = {
   '/buyerService': (BuildContext context) => BuyerSerivce(),
   '/sellerServcie': (BuildContext context) => SellerService(),
   '/riderService': (BuildContext context) => RiderService(),
+  '/addProduct': (BuildContext context) => AddProduct(),
 };
 
 String? initailRout;

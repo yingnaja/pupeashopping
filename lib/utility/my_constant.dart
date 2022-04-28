@@ -11,6 +11,7 @@ class MyConstant {
   static String routeBuyerService = '/buyerService';
   static String routeSellerService = '/sellerServcie';
   static String routeRiderService = '/riderService';
+  static String routAddProduct = '/addProduct';
   // Image
   static String image1 = 'images/image1.png';
   static String image2 = 'images/image2.png';
@@ -18,12 +19,13 @@ class MyConstant {
   static String image4 = 'images/image4.png';
   static String image5 = 'images/image5.png';
   static String avatar = 'images/avatar.png';
+  static String zoomProduct = '/images/zoopproduct.png';
   // Colors
   static Color primary = Color(0xfff9b9d0);
   static Color dark = Color(0xffc5899f);
   static Color light = Color(0xffffecff);
   static Map<int, Color> mapMaterialColor = {
-     50: Color.fromRGBO(255, 197, 137, 0.1),
+    50: Color.fromRGBO(255, 197, 137, 0.1),
     100: Color.fromRGBO(255, 197, 137, 0.2),
     200: Color.fromRGBO(255, 197, 137, 0.3),
     300: Color.fromRGBO(255, 197, 137, 0.4),
