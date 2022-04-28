@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class MyConstant {
   // Gernaral
   static String appName = 'Pupea Shopping';
-  static String domain = 'https://21cd-27-145-169-11.ap.ngrok.io';
+  static String domain = 'https://cd1f-27-145-169-11.ap.ngrok.io';
   // Route
   static String routeAuthen = '/authen';
   static String routeCreateAccount = '/createAccount';
@@ -19,7 +19,7 @@ class MyConstant {
   static String image4 = 'images/image4.png';
   static String image5 = 'images/image5.png';
   static String avatar = 'images/avatar.png';
-  static String zoomProduct = '/images/zoopproduct.png';
+  static String zoomProduct = 'images/zoomproduct.png';
   // Colors
   static Color primary = Color(0xfff9b9d0);
   static Color dark = Color(0xffc5899f);
