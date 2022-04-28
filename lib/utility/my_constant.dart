@@ -22,6 +22,19 @@ class MyConstant {
   static Color primary = Color(0xfff9b9d0);
   static Color dark = Color(0xffc5899f);
   static Color light = Color(0xffffecff);
+  static Map<int, Color> mapMaterialColor = {
+     50: Color.fromRGBO(255, 197, 137, 0.1),
+    100: Color.fromRGBO(255, 197, 137, 0.2),
+    200: Color.fromRGBO(255, 197, 137, 0.3),
+    300: Color.fromRGBO(255, 197, 137, 0.4),
+    400: Color.fromRGBO(255, 197, 137, 0.5),
+    500: Color.fromRGBO(255, 197, 137, 0.6),
+    600: Color.fromRGBO(255, 197, 137, 0.7),
+    700: Color.fromRGBO(255, 197, 137, 0.8),
+    800: Color.fromRGBO(255, 197, 137, 0.9),
+    900: Color.fromRGBO(255, 197, 137, 1.0),
+  };
+
   // TextStyle
   TextStyle h1_Style() => TextStyle(
         fontSize: 24,
@@ -33,7 +46,7 @@ class MyConstant {
         color: dark,
         fontWeight: FontWeight.w700,
       );
-      TextStyle h2_WhiteStyle() => TextStyle(
+  TextStyle h2_WhiteStyle() => TextStyle(
         fontSize: 18,
         color: Colors.white,
         fontWeight: FontWeight.w700,
@@ -43,7 +56,7 @@ class MyConstant {
         color: dark,
         fontWeight: FontWeight.normal,
       );
-      TextStyle h3_whiteStyle() => TextStyle(
+  TextStyle h3_whiteStyle() => TextStyle(
         fontSize: 14,
         color: Colors.white,
         fontWeight: FontWeight.normal,

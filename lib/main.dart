@@ -49,10 +49,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MaterialColor materialColor =
+        MaterialColor(0xffc5899f, MyConstant.mapMaterialColor);
     return MaterialApp(
       routes: map,
       title: MyConstant.appName,
       initialRoute: initailRout,
+      // theme: ThemeData(primaryColor: Colors.amber),
+      theme: ThemeData(primarySwatch: materialColor),
     );
   }
 }
