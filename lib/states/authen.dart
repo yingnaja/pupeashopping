@@ -108,9 +108,11 @@ class _AuthenState extends State<Authen> {
 
             SharedPreferences preferences =
                 await SharedPreferences.getInstance();
+            preferences.setString('id', model.id);
             preferences.setString('type_user', type_user);
             preferences.setString('user', model.user);
-            
+            preferences.setString('name', model.name);
+
             switch (type_user) {
               case 'buyer':
                 Navigator.pushNamedAndRemoveUntil(
